@@ -478,4 +478,4 @@ latest: digest: sha256:e62e73dd7f24578c82f40f15b3e6c40b49e33ccb86188f56472fd27b0
 
 정상적으로 push 가 되면 Harbor web 에서 확인한다.  
 
-<img src="./assets/harbor5.png" style="width: 60%; height: auto;"/> 
+<img src="./assets/harbor6.png" style="width: 60%; height: auto;"/> 
