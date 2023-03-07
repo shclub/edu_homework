@@ -449,7 +449,17 @@ OpenSSL version: OpenSSL 1.0.1t  3 May 2016
 
 <br/>
 
-웹브라우저에서 https://211.252.85.148:40002/ 로 접속한다.  
+웹브라우저에서 https://211.252.85.148:40002/ 로 접속한다. 
+
+<br/>
+
+https로 만 연결이 가능하며 Not secure 라고 되어 있는 것은  공인된 CA가 아니기 때문이고 사용하는데는 문제가 없다.  
+
+<br/>
+
+<img src="./assets/harbor8.png" style="width: 80%; height: auto;"/> 
+
+<br/>
 
 정상적으로 로그인이 되면 아래와 같은 화면이 나온다.
 
