@@ -2,13 +2,13 @@
  
 매 주 마다 과제는 아래와 같다.
 
-1. Java Build Tool 만들기 /  Harbor 구성해 보기
+1. Harbor 구성해 보기
 2. CKA 문제 풀어 보기
 3. kubernetes에 Jenkins Master/Slave 구성하기
 
 <br/>
 
-##  Java Build Tool 만들기 /  Harbor 구성해 보기
+##  Harbor 구성해 보기
 
 <br/>
 
@@ -21,8 +21,8 @@
 <br/>
 
 참고:
-- 출처 : https://kyeongseo.tistory.com/entry/harbor-%EC%84%A4%EC%B9%98
-- https://velog.io/@denver_almighty/Docker-Harbor-%EC%84%A4%EC%B9%98  
+- 출처 1 : https://kyeongseo.tistory.com/entry/harbor-%EC%84%A4%EC%B9%98
+- 출처 2 : https://velog.io/@denver_almighty/Docker-Harbor-%EC%84%A4%EC%B9%98  
 
 <br/>
 
@@ -51,39 +51,17 @@ e is 65537 (0x10001)
 
 <br/>
 
-
 CA 인증서 private key에서 public key를 추출한다.  
 private key 파일에는 private key와 public key가 모두 포함되어 있다.  
 
 <br/>
 
 ```bash
-root@newedu:~/certs# openssl req -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 365 -out ca.crt
 Can't load /root/.rnd into RNG
-140673936196032:error:2406F079:random number generator:RAND_load_file:Cannot open file:../crypto/rand/randfile.c:88:Filename=/root/.rnd
+140457750159808:error:2406F079:random number generator:RAND_load_file:Cannot open file:../crypto/rand/randfile.c:88:Filename=/root/.rnd
 Generating a RSA private key
-...........................................................................................................................................................................................................................................................................................................................................................................++++
-..............................................................................................................................................................................................++++
-writing new private key to 'ca.key'
------
-You are about to be asked to enter information that will be incorporated
-into your certificate request.
-What you are about to enter is what is called a Distinguished Name or a DN.
-There are quite a few fields but you can leave some blank
-For some fields there will be a default value,
-If you enter '.', the field will be left blank.
------
-Country Name (2 letter code) [AU]:KR
-State or Province Name (full name) [Some-State]:KyunggiDo
-Locality Name (eg, city) []:SeongNam
-Organization Name (eg, company) [Internet Widgits Pty Ltd]:edu
-Organizational Unit Name (eg, section) []:^C
-root@newedu:~/certs_test# openssl req -newkey rsa:4096 -nodes -sha256 -keyout ca.key -x509 -days 365 -out ca.crt
-Can't load /root/.rnd into RNG
-139655536198080:error:2406F079:random number generator:RAND_load_file:Cannot open file:../crypto/rand/randfile.c:88:Filename=/root/.rnd
-Generating a RSA private key
-...............................................................................................................................................................................................++++
-.........................................................................................................................++++
+...............................................................................................................................................................................................................................................................................................................................++++
+...++++
 writing new private key to 'ca.key'
 -----
 You are about to be asked to enter information that will be incorporated
@@ -132,7 +110,7 @@ e is 65537 (0x010001)
 ```bash
 root@newedu:~/certs# openssl req -sha512 -new  -key harbor.key  -out harbor.csr
 Can't load /root/.rnd into RNG
-140478701564352:error:2406F079:random number generator:RAND_load_file:Cannot open file:../crypto/rand/randfile.c:88:Filename=/root/.rnd
+140445988479424:error:2406F079:random number generator:RAND_load_file:Cannot open file:../crypto/rand/randfile.c:88:Filename=/root/.rnd
 You are about to be asked to enter information that will be incorporated
 into your certificate request.
 What you are about to enter is what is called a Distinguished Name or a DN.
@@ -161,17 +139,17 @@ x509 v3 extension file을 생성한다.
 <br/>
 
 ```bash
-root@newedu:~/certs# cat > v3.ext <<-EOF
-> authorityKeyIdentifier=keyid,issuer
-> basicConstraints=CA:FALSE
-> keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-> extendedKeyUsage = serverAuth
-> subjectAltName = @alt_names
->
-> [alt_names]
-> DNS.1=211.252.85.148
-> DNS.2=harbor
-> EOF
+cat > v3.ext <<-EOF
+authorityKeyIdentifier=keyid,issuer
+basicConstraints=CA:FALSE
+keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+extendedKeyUsage = serverAuth
+subjectAltName = @alt_names
+
+[alt_names]
+DNS.1=211.252.85.148
+DNS.2=harbor
+EOF
 ```
 
 <br/>
@@ -181,17 +159,47 @@ v3.ext 파일을 사용해 harbor 호스트에 대한 인증서를 생성한다.
 <br/>
 
 ```bash
-root@newedu:~/certs# openssl x509 -req -sha512 -days 3650 \
->     -extfile v3.ext \
->     -CA ca.crt -CAkey ca.key -CAcreateserial \
->     -in harbor.csr \
->     -out harbor.crt
+openssl x509 -req -sha512 -days 3650 \
+    -extfile v3.ext \
+    -CA ca.crt -CAkey ca.key -CAcreateserial \
+    -in harbor.csr \
+    -out harbor.crt
+```  
+
+<br/>
+
+아래와 같이 결과가 나오면 된다.  
+
+<br/>
+
+```bash
 Signature ok
 subject=C = KR, ST = KyunggiDo, L = SeongNam, O = KT, OU = edu, CN = 211.252.85.148, emailAddress = shclub@gmail.com
 Getting CA Private Key
 ```  
 
 <br/>
+
+아래와 같이 화일이 생성이 된 것을 확인 할 수 있다. 
+
+<br/>
+
+```bash
+root@edu20:~/certs# ll
+total 36
+drwxr-xr-x  2 root root 4096 Mar  7 00:32 ./
+drwx------ 11 root root 4096 Mar  7 00:29 ../
+-rw-r--r--  1 root root 2163 Mar  7 00:23 ca.crt
+-rw-------  1 root root 3272 Mar  7 00:22 ca.key
+-rw-r--r--  1 root root   41 Mar  7 00:32 ca.srl
+-rw-r--r--  1 root root 2224 Mar  7 00:32 harbor.crt
+-rw-r--r--  1 root root 1821 Mar  7 00:27 harbor.csr
+-rw-------  1 root root 3243 Mar  7 00:26 harbor.key
+-rw-r--r--  1 root root  259 Mar  7 00:31 v3.ext
+```  
+
+<br/>
+
 
 #### Harbor 및 docker에 인증서를 제공
 
@@ -236,6 +244,30 @@ cp ca.crt /etc/docker/certs.d/211.252.85.148:40002/
 
 <br/>
 
+#### Insecure Registry 설정
+
+<br/>
+
+우리가 구축한 docker registry는 http로 설정이 되어 있지만 docker client에서는  https로 연결을 시도한다.  
+
+정상적으로 remote 에서 연결 하기 위해서는 insecure registry를 설정해야 한다.
+
+<br/>
+
+linux인 경우 `/etc/docker/daemon.json` 화일을 vi 에디터로 열고 아래와 같이 추가한다.    
+docker registry의 ip와 포트를 입력한다.  
+
+<br/>
+
+```bash  
+root@newedu:~# vi /etc/docker/daemon.json
+{
+  "insecure-registries": [
+    "211.252.85.148:40002"
+  ]
+}
+``` 
+
 이제 도커를 재시작 합니다.
 
 <br/>  
@@ -251,11 +283,12 @@ systemctl restart docker
 
 <br/>
 
-harbor 설치 파일을 다운로드한다.  
+harbor 설치 파일을 다운로드한다.  먼저 root 폴더로 이동한다.  
 
 <br/>
 
-```bash  
+```bash 
+cd ~/ 
 wget "https://github.com/goharbor/harbor/releases/download/v2.1.3/harbor-offline-installer-v2.1.3.tgz"
 tar xfvz harbor-offline-installer-v2.1.3.tgz
 cd ~/harbor
@@ -295,6 +328,35 @@ Harbor 설치 스크립트 실행
 
 ```bash
 root@newedu:~/harbor# ./prepare
+prepare base dir is set to /root/harbor
+Unable to find image 'goharbor/prepare:v2.1.3' locally
+v2.1.3: Pulling from goharbor/prepare
+522a057091dd: Pull complete
+afa60fdd2728: Pull complete
+bb4d1e42614d: Pull complete
+738d7c5d7e5b: Pull complete
+0f80235190d5: Pull complete
+d807fa4eab15: Pull complete
+302f62788a49: Pull complete
+472c667560f3: Pull complete
+Digest: sha256:0877d0b90addbe605d2dc1b870510c820b428d7fc1ae980d6ce899c4970e0b25
+Status: Downloaded newer image for goharbor/prepare:v2.1.3
+Generated configuration file: /config/portal/nginx.conf
+Generated configuration file: /config/log/logrotate.conf
+Generated configuration file: /config/log/rsyslog_docker.conf
+Generated configuration file: /config/nginx/nginx.conf
+Generated configuration file: /config/core/env
+Generated configuration file: /config/core/app.conf
+Generated configuration file: /config/registry/config.yml
+Generated configuration file: /config/registryctl/env
+Generated configuration file: /config/registryctl/config.yml
+Generated configuration file: /config/db/env
+Generated configuration file: /config/jobservice/env
+Generated configuration file: /config/jobservice/config.yml
+Generated and saved secret to file: /data/secret/keys/secretkey
+Successfully called func: create_root_cert
+Generated configuration file: /compose_location/docker-compose.yml
+Clean up the input dir
 ```
 
 <br/>
@@ -338,6 +400,8 @@ Clean up the input dir
 
 [Step 5]: starting Harbor ...
 Creating network "harbor_harbor" with the default driver
+Creating network "harbor_harbor-clair" with the default driver
+Creating network "harbor_harbor-chartmuseum" with the default driver
 Creating harbor-log ... done
 Creating harbor-portal     ... done
 Creating redis         ... done
@@ -352,27 +416,32 @@ Creating nginx             ... done
 
 <br/>
 
-docker 설치했는데 docker-compose를 설치하라고 나온다면    
+현재 설치된 docker-compose의 버전이 낮아 1.18+ 이상 버전이 설치가 되어야 한다.   
+
+docker compose를 제거하고 아래와 같이 설치한다.  
 
 <br/>
 
 ```bash
-#링크 생성
-ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-chmod 755 /usr/local/bin/docker-compose
-```  
-<br/>
-
-위의 방법으로도 에러가 발생한다면 docker compose를 제거하고 아래와 같이 설치한다.  
+root@newedu:~/harbor# apt-get remove docker-compose
+root@newedu:~/harbor# curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
+root@newedu:~/harbor# chmod +x /usr/bin/docker-compose
+```
 
 <br/>
+
+docker compose 버전을 확인하고 1.21.2 버전이 설치 된 것을 확인 할 수 있다.
+
+<br/>
+
 
 ```bash
-apt-get remove docker-compose
-curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-`uname -s`-`uname -m` -o /usr/bin/docker-compose
-chmod +x /usr/bin/docker-compose
-```  
-
+root@newedu:~/harbor# docker-compose version
+docker-compose version 1.21.2, build a133471
+docker-py version: 3.3.0
+CPython version: 3.6.5
+OpenSSL version: OpenSSL 1.0.1t  3 May 2016
+```
 
 <br/>
 
@@ -479,3 +548,13 @@ latest: digest: sha256:e62e73dd7f24578c82f40f15b3e6c40b49e33ccb86188f56472fd27b0
 정상적으로 push 가 되면 Harbor web 에서 확인한다.  
 
 <img src="./assets/harbor6.png" style="width: 60%; height: auto;"/> 
+
+<br/>
+
+clair 설치를 하면 SCAN 버튼이 활성화 되고 docker image의 취약점을 inspect 할 수 있다.
+
+<br/>
+
+<img src="./assets/harbor7.png" style="width: 60%; height: auto;"/> 
+
+<br/>
