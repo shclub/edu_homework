@@ -185,7 +185,7 @@ Getting CA Private Key
 <br/>
 
 ```bash
-root@edu20:~/certs# ll
+root@newedu:~/certs# ll
 total 36
 drwxr-xr-x  2 root root 4096 Mar  7 00:32 ./
 drwx------ 11 root root 4096 Mar  7 00:29 ../
@@ -449,6 +449,41 @@ OpenSSL version: OpenSSL 1.0.1t  3 May 2016
 ```
 
 <br/>
+
+ 설치가 완료 되면 아래 명령어로 컨테이너 상태를 확인한다.  
+
+ <br/>
+
+```bash
+root@newedu:~/harbor# docker-compose ps
+      Name                 Command             State               Ports
+--------------------------------------------------------------------------------
+chartmuseum         ./docker-               Up (healthy)
+                    entrypoint.sh
+clair               ./docker-               Up (healthy)
+                    entrypoint.sh
+clair-adapter       /home/clair-            Up (healthy)
+                    adapter/entryp ...
+harbor-core         /harbor/entrypoint.sh   Up (healthy)
+harbor-db           /docker-entrypoint.sh   Up (healthy)
+harbor-jobservice   /harbor/entrypoint.sh   Up (healthy)
+harbor-log          /bin/sh -c              Up (healthy)   127.0.0.1:1514->10514
+                    /usr/local/bin/ ...                    /tcp
+harbor-portal       nginx -g daemon off;    Up (healthy)
+nginx               nginx -g daemon off;    Up (healthy)   0.0.0.0:80->8080/tcp,
+                                                           :::80->8080/tcp, 0.0.
+                                                           0.0:40002->8443/tcp,:
+                                                           ::40002->8443/tcp
+redis               redis-server            Up (healthy)
+                    /etc/redis.conf
+registry            /home/harbor/entrypoi   Up (healthy)
+                    nt.sh
+registryctl         /home/harbor/start.sh   Up (healthy)
+```  
+
+
+<br/>
+
 
 #### web ui 접속
 
