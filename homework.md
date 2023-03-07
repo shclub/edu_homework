@@ -367,6 +367,11 @@ Clean up the input dir
 
 <br/>
 
+install 을 하면 에러가 발생한다.   
+아래에서 에러 조치를 한후 다시 실행한다.  
+
+<br/>
+
 
 ```bash
 root@newedu:~/harbor# ./install.sh --with-clair --with-chartmuseum
