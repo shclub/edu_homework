@@ -608,3 +608,96 @@ clair 설치를 하면 SCAN 버튼이 활성화 되고 docker image의 취약점
 <img src="./assets/harbor7.png" style="width: 60%; height: auto;"/> 
 
 <br/>
+
+#### Harbor 종료 및 재기동
+
+<br/>
+
+harbor 는 docker-compose 로 구성되어 있다.    
+
+종료를 위해서는 harbor 폴더로 이동하고 아래 명령어를 사용한다.
+
+<br/>
+
+```bash
+root@newedu:~# cd ~/harbor
+root@newedu:~/harbor# docker-compose down -v
+Stopping harbor-jobservice ... done
+Stopping nginx             ... done
+Stopping harbor-core       ... done
+Stopping clair-adapter     ... done
+Stopping clair             ... done
+Stopping chartmuseum       ... done
+Stopping registry          ... done
+Stopping harbor-db         ... done
+Stopping redis             ... done
+Stopping registryctl       ... done
+Stopping harbor-portal     ... done
+Stopping harbor-log        ... done
+Removing harbor-jobservice ... done
+Removing nginx             ... done
+Removing harbor-core       ... done
+Removing clair-adapter     ... done
+Removing clair             ... done
+Removing chartmuseum       ... done
+Removing registry          ... done
+Removing harbor-db         ... done
+Removing redis             ... done
+Removing registryctl       ... done
+Removing harbor-portal     ... done
+Removing harbor-log        ... done
+Removing network harbor_harbor
+Removing network harbor_harbor-clair
+Removing network harbor_harbor-chartmuseum
+```  
+
+<br/>
+
+재기동 하기 위해서는 아래와 같이 수행한다.
+
+<br/>
+
+```bash
+root@newedu:~/harbor# docker-compose up -d
+Creating network "harbor_harbor" with the default driver
+Creating network "harbor_harbor-clair" with the default driver
+Creating network "harbor_harbor-chartmuseum" with the default driver
+Creating harbor-log ... done
+Creating registry      ... done
+Creating harbor-portal ... done
+Creating chartmuseum   ... done
+Creating redis         ... done
+Creating registryctl   ... done
+Creating harbor-db     ... done
+Creating harbor-core   ... done
+Creating clair         ... done
+Creating clair-adapter ... done
+Creating nginx             ... done
+Creating harbor-jobservice ... done
+```  
+<br/>
+
+status 를 확인한다.  
+
+<br/>
+
+```bash
+root@newedu:~/harbor# docker-compose ps
+      Name                     Command                  State                                   Ports
+---------------------------------------------------------------------------------------------------------------------------------
+chartmuseum         ./docker-entrypoint.sh           Up (healthy)
+clair               ./docker-entrypoint.sh           Up (healthy)
+clair-adapter       /home/clair-adapter/entryp ...   Up (healthy)
+harbor-core         /harbor/entrypoint.sh            Up (healthy)
+harbor-db           /docker-entrypoint.sh            Up (healthy)
+harbor-jobservice   /harbor/entrypoint.sh            Up (healthy)
+harbor-log          /bin/sh -c /usr/local/bin/ ...   Up (healthy)   127.0.0.1:1514->10514/tcp
+harbor-portal       nginx -g daemon off;             Up (healthy)
+nginx               nginx -g daemon off;             Up (healthy)   0.0.0.0:80->8080/tcp,:::80->8080/tcp,
+                                                                    0.0.0.0:40002->8443/tcp,:::40002->8443/tcp
+redis               redis-server /etc/redis.conf     Up (healthy)
+registry            /home/harbor/entrypoint.sh       Up (healthy)
+registryctl         /home/harbor/start.sh            Up (healthy)
+```
+
+<br/>
