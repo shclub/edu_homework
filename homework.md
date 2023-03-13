@@ -218,7 +218,7 @@ Empty set (0.00 sec)
 
 docker 컨테이너 GUI 관리 툴인 portainer를 설치하고 웹에서 접속하여
           모니터링한다.
-  - url  참고 :  https://docs.portainer.io/v/ce-2.11/start/install/server/docker/linux
+  - url  참고 :  https://docs.portainer.io/start/install-ce/server/docker/linux
   - 웹 포트는 40005로 expose 한다 ( https 9443 포트 변경 필요 ).
   - 웹브라우저 접속은 https://(본인VM Public IP):40005  
      admin 비밀번호 신규로 생성 (8자리 이상) 한다.
@@ -259,7 +259,6 @@ docker run -d -p 8000:8000 -p 40005:9443 --name portainer --restart=always -v /v
 <img src="./assets/portainer_docker_volume.png" style="width: 60%; height: auto;">  
 
 <br/>
-
 
 <img src="./assets/portainer_admin.png" style="width: 60%; height: auto;">  
 
