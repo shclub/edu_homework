@@ -2,17 +2,270 @@
  
 매 주 마다 과제는 아래와 같다.
 
-1. Harbor 구성해 보기
-2. CKA 문제 풀어 보기
-3. kubernetes에 Jenkins Master/Slave 구성하기
+1. 1주차
+    -  Nexus private registry를 사용하여 Jenkins Pipeline 구성
+    -  컨테이너 Mysql DB 활용
+    -  Portainer 설치
+    -  Harbor 구성해 보기 
+2. 2주차 : CKA 문제 풀어 보기 [ 문제 ](./cka.md) 
+3. 3주차 : kubernetes에 Jenkins Master/Slave 구성하기
 
 <br/>
 
-##  Harbor 구성해 보기
+##  1주차
 
 <br/>
 
-### Harbor 구성해 보기
+### Nexus private registry를 사용하여 Jenkins Pipeline 구성
+
+<br/>
+
+> 문제 : nexus로 구성된 private docker registry를 사용하여 pipeline을 신규로 구성한다.  
+
+<br/>
+
+순서
+- credential을 private docker registry 용으로 신규로 구성 한다.  
+- New Item으로 신규 pipeline을 구성한다. ( copy from 이름 활용 )
+- Jenkins 화일을 신규 생성하고 docker registry 관련 값을 수정한다.
+- pipeline 을 실행시키고 본인의 nexus에 도커 이미지가 저장되었는지 확인한다.    
+- 참고 :  Jenkins_private 화일  
+
+<br/>
+
+> 답안
+
+<br/>
+
+- jenkins에서 본인 nexus의 docker ci를 신규 생성한다.
+- jenkinsfile을 새로 만들고 수정한다.
+  - dockerRepo 변경
+  - dockerCredentials 은 신규 생성한 docker ci
+- docker.withRegistry 의 공백에 본인이 nexus 주소를 입력한다.
+- jenkins pipeline 을 copy from 으로 신규 생성하고 Jenkinsfile 이름을 변경한다.
+
+<br/>
+
+```bash
+properties([pipelineTriggers([githubPush()])])
+
+pipeline {
+    environment {
+        // Global 변수 선언
+        dockerRepo = "211.252.85.148:40010/edu1"
+        dockerCredentials = 'edu_private_docker_ci'
+        dockerImageVersioned = ""
+        dockerImageLatest = ""
+    }
+
+    agent any
+
+    stages {
+        /* checkout repo */
+        stage('Checkout SCM') {
+            steps{
+                script{
+                    checkout scm
+                 }
+            }   
+        }
+        
+        stage("Building docker image"){
+            steps{
+                script{
+                    dockerImageVersioned = docker.build dockerRepo //+ ":$BUILD_NUMBER"
+                    dockerImageLatest = docker.build dockerRepo + ":latest"
+                }
+            }
+        }
+        stage("Pushing image to registry"){
+            steps{
+                script{
+                    // if you want to use custom registry, use the first argument, which is blank in this case
+                    docker.withRegistry( '211.252.85.148:40010', dockerCredentials){
+                        dockerImageVersioned.push()
+                        dockerImageLatest.push()
+                    }
+                }
+            }
+        }
+        stage('Cleaning up') {
+            steps {
+                sh "docker rmi $dockerRepo"//:$BUILD_NUMBER"
+            }
+        }
+    }
+
+    /* Cleanup workspace */
+    post {
+       always {
+           deleteDir()
+       }
+   }
+}
+```
+
+
+<br/>
+
+
+### 컨테이너 Mysql DB 활용
+
+<br/>
+
+docker compose로 구성한 mysql container에 접속하여 로그인 한 후 wordpress db에 customer 테이블을 생성해 본다.  
+ - docker-compose.yml 화일 참고
+ - table 이름은 customer 이고 필드는 customer_id , customer_name 만 필요  
+
+<br/>
+
+> 답안
+
+<br/>
+
+컨테이너안에서 명령어로 mysql에 접속한다.  
+id/패스워드는 docker-compose.yml에서 확인 가능  
+
+<br/>
+
+```bash
+mysql -u wordpress -p
+Enter password:
+```  
+
+<br/>
+
+databases 목록을 확인하고 원하는 db를 선택하고   
+source 명령어를 사용하여  create table 문을 실행한다.   
+
+<br/>
+
+```bash
+show databases;
+use wordpress;
+create table customer (customer_id, customer_name);
+```   
+
+<br/>
+
+테이블 목록을 확인하면 customer 테이블이 생성된 걸 확인 할수 있다.  
+
+<br/>
+
+```bash
+show tables;
+select * from customer;
+```  
+
+<br/>
+
+
+### Portainer 설치
+
+<br/>
+
+> 문제
+
+<br/>
+
+docker 컨테이너 GUI 관리 툴인 portainer를 설치하고 웹에서 접속하여
+          모니터링한다.
+  - url  참고 :  https://docs.portainer.io/v/ce-2.11/start/install/server/docker/linux
+  - 웹 포트는 40005로 expose 한다 ( https 9443 포트 변경 필요 ).
+  - 웹브라우저 접속은 https://(본인VM Public IP):40005  
+     admin 비밀번호 신규로 생성 (8자리 이상) 한다.
+
+
+<br/>
+
+> 답안
+
+<br/>
+
+데이터를 저장하기 위해 도커 볼륨을 생성한다. 향후에 컨테이너의 폴더와 연결한다.  
+
+```bash
+docker volume create portainer_data
+```  
+
+<br/>
+
+로컬에 도커 볼륨이 생성되어 있는지 확인한다.  
+
+```bash
+docker volume ls
+```  
+
+<br/>
+
+https 포트인 9443만 40005로 변경한다.  
+
+<br/>
+
+```bash
+docker run -d -p 8000:8000 -p 40005:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:2.11.1
+```  
+
+<br/>
+
+<img src="./assets/portainer_docker_volume.png" style="width: 60%; height: auto;">  
+
+<br/>
+
+
+<img src="./assets/portainer_admin.png" style="width: 60%; height: auto;">  
+
+<br/>
+
+Getting Start를 선택하고 로컬 도커를 클릭한다.  
+     
+<img src="./assets/portainer_local.png" style="width: 60%; height: auto;">
+
+<br/>
+
+도커에서 관리하는 리소스 대쉬보드를 볼수 있다.   
+     
+<img src="./assets/portainer_dashboard.png" style="width: 60%; height: auto;">  
+
+<br/>
+
+컨테이너 항목을 선택하면 자세한 컨테이너 현황을 볼수 있다.   
+     
+<img src="./assets/portainer_container.png" style="width: 60%; height: auto;">  
+
+<br/>
+
+도커 볼륨은 아래 명령어로 삭제 할 수 있다.   
+ 
+```bash
+docker volume prune
+```
+
+<br/>
+
+###  Harbor 구성해 보기
+
+
+<br/>
+
+> 문제   
+
+Harbor 설치 ( https가 힘든 사람은 http 로 구성 )
+- Private Docker Registry 를 Harbor를 사용하여 구성 한다.
+- Harbor 포트는 40002를 사용하며 https 연결하기 위한 인증서 설정을 한다.
+- Harbor 에 edu 프로젝트를 생성하고 신규 계정을 생성하여 members에 추가한다.
+- nginx 이미지를 본인의 Private Docker Registry에 Push 한다.
+- Harbor에서 확인한다.
+- clair 를 사용하여 도커 취약점을 분석한다.  
+
+<br/>
+
+샘플 : https://211.252.85.148:40002/  
+계정 : admin/New1234!
+
+<br/>
+
+> 답안  
 
 <br/>
 
@@ -699,5 +952,13 @@ redis               redis-server /etc/redis.conf     Up (healthy)
 registry            /home/harbor/entrypoint.sh       Up (healthy)
 registryctl         /home/harbor/start.sh            Up (healthy)
 ```
+
+<br/>
+
+##  2주차
+
+<br/>
+
+### CKA 문제 풀어보기
 
 <br/>
