@@ -123,28 +123,55 @@ docker compose로 구성한 mysql container에 접속하여 로그인 한 후 wo
 
 <br/>
 
-컨테이너안에서 명령어로 mysql에 접속한다.  
-id/패스워드는 docker-compose.yml에서 확인 가능  
+컨테이너로 접속한다.  
 
 <br/>
 
 ```bash
-mysql -u wordpress -p
+root@newedu:~/edu1 # docker exec -it ef9757c00f48 sh
+```  
+
+<br/>
+
+컨테이너안에서 명령어로 mysql에 접속한다.  
+id/패스워드는 docker-compose.yml에서 확인 가능  
+
+
+<br/>
+
+```bash
+sh-4.2# mysql -u wordpress -p
 Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 4
+Server version: 5.7.41 MySQL Community Server (GPL)
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> use wordpress;
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
 ```  
 
 <br/>
 
 databases 목록을 확인하고 원하는 db를 선택하고   
-source 명령어를 사용하여  create table 문을 실행한다.   
+create table 문을 실행한다.   
 
 <br/>
 
 ```bash
-show databases;
-use wordpress;
-create table customer (customer_id, customer_name);
-```   
+mysql> create table customer ( customer_id varchar(10), customer_name varchar(20));
+Query OK, 0 rows affected (0.01 sec)
+```  
 
 <br/>
 
@@ -153,8 +180,29 @@ create table customer (customer_id, customer_name);
 <br/>
 
 ```bash
-show tables;
-select * from customer;
+mysql> show tables;
++-----------------------+
+| Tables_in_wordpress   |
++-----------------------+
+| customer              |
+| test                  |
+| wp_commentmeta        |
+| wp_comments           |
+| wp_links              |
+| wp_options            |
+| wp_postmeta           |
+| wp_posts              |
+| wp_term_relationships |
+| wp_term_taxonomy      |
+| wp_termmeta           |
+| wp_terms              |
+| wp_usermeta           |
+| wp_users              |
++-----------------------+
+14 rows in set (0.00 sec)
+
+mysql> select * from customer;
+Empty set (0.00 sec)
 ```  
 
 <br/>
