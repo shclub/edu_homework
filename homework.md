@@ -20,7 +20,7 @@
 
 <br/>
 
-> 문제 : nexus로 구성된 private docker registry를 사용하여 pipeline을 신규로 구성한다.  
+> 문제 : nexus (또는 Harabor) 로 구성된 private docker registry를 사용하여 pipeline을 신규로 구성한다.  
 
 <br/>
 
@@ -37,11 +37,11 @@
 
 <br/>
 
-- jenkins에서 본인 nexus의 docker ci를 신규 생성한다.
+- jenkins에서 본인 nexus (또는 Harbor) 의 docker ci를 신규 생성한다.
 - jenkinsfile을 새로 만들고 수정한다.
   - dockerRepo 변경
   - dockerCredentials 은 신규 생성한 docker ci
-- docker.withRegistry 의 공백에 본인이 nexus 주소를 입력한다.
+- docker.withRegistry 의 공백에 본인이 nexus (또는 Harbor) 주소를 입력한다.
 - jenkins pipeline 을 copy from 으로 신규 생성하고 Jenkinsfile 이름을 변경한다.
 
 <br/>
