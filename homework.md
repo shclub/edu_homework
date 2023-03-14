@@ -52,7 +52,10 @@ properties([pipelineTriggers([githubPush()])])
 pipeline {
     environment {
         // Global 변수 선언
-        dockerRepo = "211.252.85.148:40010/edu1"
+        // Harbor 사용시 : 앞에 project 이름이 붙는다. 예) edu
+        dockerRepo = "edu/edu1"
+        // nexus
+        //dockerRepo = "edu1"
         dockerCredentials = 'edu_private_docker_ci'
         dockerImageVersioned = ""
         dockerImageLatest = ""
@@ -82,7 +85,10 @@ pipeline {
             steps{
                 script{
                     // if you want to use custom registry, use the first argument, which is blank in this case
-                    docker.withRegistry( '211.252.85.148:40010', dockerCredentials){
+                    // Harbor
+                    docker.withRegistry('https://211.252.85.148:40002', dockerCredentials){
+                    // nexus
+                    //docker.withRegistry( 'http://211.252.85.148:40010', dockerCredentials){
                         dockerImageVersioned.push()
                         dockerImageLatest.push()
                     }
@@ -103,6 +109,7 @@ pipeline {
        }
    }
 }
+
 ```
 
 
