@@ -1251,6 +1251,10 @@ Jenkins 가 사용하는 stroage를 위해 pv / pvc 를 생성해야 하며
 
 <br/>
 
+> 폴더는 사전에 강사가 생성하여 별도 생성 불필요
+
+<br/>
+
 ```bash
 [root@edu jenkins]# mkdir -p edu
 [root@edu jenkins]# mkdir -p edu1
@@ -1280,6 +1284,10 @@ jenkins master / slave 용 해당 폴더의 권한을 설정한다.
 [root@edu jenkins]# chown -R nfsnobody:nfsnobody edu_slave
 [root@edu jenkins]# chmod 777 edu_slave
 ```  
+
+<br/>
+
+> 여기부터는 생성해야 함.  
 
 <br/>
 
@@ -1511,6 +1519,11 @@ root@newedu:~# vi jenkins_values.yaml
  52     userKey: jenkins-admin-user
  53     passwordKey: jenkins-admin-password
 ```  
+
+<br/>
+
+kubernetes plugin은 반드시 아래와 같이 수정 필요.  
+현재 jenkins과 호환되는 버전
 
 <br/>
 
