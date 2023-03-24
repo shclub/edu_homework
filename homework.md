@@ -1669,7 +1669,7 @@ NOTE: Consider using a custom image with pre-installed plugins
 <br/>
 
 설치가 완료되면 pod를 조회하여 jenkins-0 pod가 있는지 확인한다.  
-처음에는 plugin 이 설치가 됨으로 8~10분 정도 시간이 필요하다.  
+처음에는 plugin 이 설치가 됨으로 빠를 때는 1분 이내 늦을때는 8~10분 정도 시간이 필요하다.  
 
 <br/>
 
@@ -1679,7 +1679,15 @@ NAME                                        READY   STATUS    RESTARTS   AGE
 jenkins-0                                   2/2     Running   0          18h
 nfs-test-589c488d6f-8lk5p                   1/1     Running   0          40h
 ``` 
+<br/>
 
+아래 명령어로 plugin 설치가 되는 과정을 볼 수 있다.
+
+<br/>
+
+```bash
+root@newedu:~/jenkins# kubectl logs jenkins1-0 -c init 
+```
 <br/>
 
 #### Jenkins 설정
