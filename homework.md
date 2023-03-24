@@ -1528,6 +1528,8 @@ kubernetes plugin은 반드시 아래와 같이 수정 필요.
 <br/>
 
 ```bash
+ 91   javaOpts: "-Duser.timezone=Asia/Seoul"
+ ...
 244   installPlugins:
 245     - kubernetes:3842.v7ff395ed0cf3 #3734.v562b_b_a_627ea_c
 246     - workflow-aggregator:590.v6a_d052e5a_a_b_5
@@ -1666,7 +1668,8 @@ NOTE: Consider using a custom image with pre-installed plugins
 
 <br/>
 
-설치가 완료되면 pod를 조회하여 jenkins-0 pod가 있는지 확인한다.
+설치가 완료되면 pod를 조회하여 jenkins-0 pod가 있는지 확인한다.  
+처음에는 plugin 이 설치가 됨으로 8~10분 정도 시간이 필요하다.  
 
 <br/>
 
