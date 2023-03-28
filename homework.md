@@ -1278,6 +1278,17 @@ jenkins master / slave 용 해당 폴더의 권한을 설정한다.
 
 <br/>
 
+pod 내에서 nfs 연결해서 권한을 줄때는   
+
+`chown -R nfsnobody:nfsnobody edu`  
+
+대신 아래처럼 nobody:nogroup 으로 준다.
+
+`chown -R nobody:nogroup edu`
+
+<br/>
+
+
 ```bash
 [root@edu jenkins]# chown -R nfsnobody:nfsnobody edu
 [root@edu jenkins]# chmod 777 edu
@@ -2066,6 +2077,17 @@ SonarQube 용 폴더도 생성한다.
 postgresql / SonarQube 용 해당 폴더의 권한을 설정한다.
 
 <br/>
+
+pod 내에서 nfs 연결해서 권한을 줄때는   
+
+`chown -R nfsnobody:nfsnobody edu`  
+
+대신 아래처럼 nobody:nogroup 으로 준다.
+
+`chown -R nobody:nogroup edu`
+
+<br/>
+
 
 ```bash
 [root@edu postgre]# chown -R nfsnobody:nfsnobody edu
