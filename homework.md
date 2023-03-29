@@ -2264,7 +2264,7 @@ postgre_values.yaml 를 수정한다.
 - 28 ,29,30,31 : 본인이 DB 계정 설정
 - 646 : 본인의 pvc로 변경
 - 669 : 5G로 사이즈 변경
-- 694 : read replica 0
+- 694 : read replica 0 ( primary db만 사용 , readReplicas 는 사용 안함)
 
 <br/>
 
@@ -2556,6 +2556,22 @@ To access your SonarQube(TM) site from outside the cluster follow the steps belo
 <br/>
 
 pod를 확인한다.
+
+pod가 기동 되지 않으면 `kubectl get events` 명령어로 조회를 한다.   
+
+
+`privileged` 관련 오류가 발생하면 아래와 같이 권한을 부여하고  
+
+`helm delete sonarqube` 한 후 다시 설치한다.  
+
+
+<br/>
+
+```bash
+root@newedu:~/sonar# oc adm policy add-scc-to-user privileged -z sonarqube
+```  
+
+<br/>
 
 ```bash
 root@newedu:~/sonar# kubectl get po
