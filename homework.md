@@ -2564,6 +2564,9 @@ pod가 기동 되지 않으면 `kubectl get events` 명령어로 조회를 한�
 
 `helm delete sonarqube` 한 후 다시 설치한다.  
 
+<br/>
+
+> 중요 : 재설치를 하는 경우 NFS 폴더의  데이터를 다 삭제하고 설치해야 함.
 
 <br/>
 
